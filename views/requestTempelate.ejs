@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Introduction Request</title>
+    <style>
+      /* Add your CSS styles here */
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+      }
+      p {
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        max-width: 600px;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      .button {
+        display: inline-block;
+        background-color: #4caf50;
+        border: none;
+        color: white;
+        padding: 10px 25px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+        border-radius: 8px;
+      }
+      .button:hover {
+        background-color: #45a049;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Hello <%= recipientName %>,</h2>
+      <p>
+        I wanted to connect with <%= contactName %> of <%= companyName %>. <%=
+        companyName %> is one of our top prospects as we work with few other
+        companies in this space. We’d love to highlight how we can add value by
+        working with them. Can you kindly facilitate an introduction between us?
+      </p>
+      <p>Regards,</p>
+      <p><%= senderName %></p>
+      <div>
+        <form action="/handle-response" method="POST">
+          <input type="hidden" name="recipient" value="<%= recipientEmail %>" />
+          <input type="hidden" name="contact" value="<%= contactName %>" />
+          <input type="hidden" name="company" value="<%= companyName %>" />
+          <input type="hidden" name="sender" value="<%= senderName %>" />
+          <button class="button" type="submit" name="response" value="Yes">
+            Yes
+          </button>
+          <button class="button" type="submit" name="response" value="Can try">
+            Can try
+          </button>
+          <button
+            class="button"
+            type="submit"
+            name="response"
+            value="No, Sorry!"
+          >
+            No, Sorry!
+          </button>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>
