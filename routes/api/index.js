@@ -100,9 +100,10 @@ router.post("/auth/google", async (req, res) => {
         do {
           const response = await fetchPhoneContactsPage(nextPageToken);
           const { connections, nextPageToken: nextToken } = response.data;
-
-          allContacts.phoneContacts =
-            allContacts.phoneContacts.concat(connections);
+          if(connections){
+            allContacts.phoneContacts =
+              allContacts.phoneContacts.concat(connections);
+          }
           nextPageToken = nextToken;
         } while (nextPageToken);
       };
