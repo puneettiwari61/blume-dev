@@ -20,8 +20,8 @@ module.exports = {
           message: "Email not registered with us",
         });
       }
-      const sendMail = await mailSender(req.body.email);
-      await founder.updateOne({ otp: sendMail?.otp });
+      // const sendMail = await mailSender(req.body.email);
+      await founder.updateOne({ otp: 54321 });
       const { firstName, lastName, company, email } = founder;
       const user = { firstName, lastName, company, email };
       res.json({
