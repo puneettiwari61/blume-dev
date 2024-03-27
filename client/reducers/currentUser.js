@@ -16,7 +16,7 @@ function currentUser(state = initialState, action) {
     case "USER_UPDATE":
       return {
         ...state,
-        user: action.user,
+        user: { ...state.user, ...action.user },
         isAuthInProgress: false,
       };
 

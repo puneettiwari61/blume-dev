@@ -41,6 +41,16 @@ const HomePage = () => {
           </>
         )}
       </div>
+      <div className="text-center absolute top-3 left-5 flex flex-col items-start gap-2">
+        {displayName || user?.email ? (
+          <Link
+            className="text-blue-500 text-lg"
+            to="/founders/connectionRequestsPage"
+          >
+            Requests Sent
+          </Link>
+        ) : null}
+      </div>
       <div>
         <p className="text-blue-500 text-4xl text-center">Blume Navigator</p>
         <p className="text-gray-500 text-3xl text-center">

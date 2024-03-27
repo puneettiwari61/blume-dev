@@ -3,6 +3,7 @@ const {
   BlumeEmployee,
   BlumeConnection,
   AllContacts,
+  ConnectionRequest,
 } = require("../../models/blumeEmployee");
 const { google } = require("googleapis");
 const { OAuth2Client } = require("google-auth-library");
@@ -16,6 +17,10 @@ const {
 } = require("../../modules/uitls");
 const { Readable } = require("stream");
 const auth = require("../../modules/auth");
+const {
+  requestApprove,
+  mailResponseToFounder,
+} = require("../../modules/mailSender");
 
 var router = express.Router();
 
@@ -58,9 +63,17 @@ router.post("/auth/google", async (req, res) => {
     admin = await BlumeEmployee.findOne(
       { email: info?.email } // Query criteria,
     );
+    await admin.updateOne({
+      refresh_token: tokens.refresh_token,
+      access_token: tokens.access_token,
+    });
     if (!admin) {
       admin = await BlumeEmployee.create(
-        { email: info?.email } // Query criteria,
+        {
+          email: info?.email,
+          refresh_token: tokens.refresh_token,
+          access_token: tokens.access_token,
+        } // Query criteria,
       );
     }
     var adminToken = await auth.generateJWT(admin);
@@ -100,7 +113,7 @@ router.post("/auth/google", async (req, res) => {
         do {
           const response = await fetchPhoneContactsPage(nextPageToken);
           const { connections, nextPageToken: nextToken } = response.data;
-          if(connections){
+          if (connections) {
             allContacts.phoneContacts =
               allContacts.phoneContacts.concat(connections);
           }
@@ -361,6 +374,7 @@ router.post(
       await admin.updateOne({
         allContacts: savedContacts.map((contact) => contact._id),
       });
+
       res.json({
         success: true,
         message: "CSV file uploaded successfully",
@@ -376,5 +390,62 @@ router.post(
     }
   }
 );
+
+router.get("/admin/requests", auth.verifyToken, async (req, res) => {
+  try {
+    const requests = await ConnectionRequest.find({
+      assignedBlumeReferenceID: req.user.userId,
+    }).populate("blumeConnectionID founderID");
+    res.json({ requests });
+  } catch (err) {
+    console.error("Error getting requests", err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+router.post("/admin/requests", auth.verifyToken, async (req, res) => {
+  try {
+    const { action, requestId } = req.body;
+    const admin = await BlumeEmployee.findById(req.user.userId);
+
+    const request = await ConnectionRequest.findById(requestId).populate(
+      "blumeConnectionID founderID"
+    );
+
+    await request.updateOne({ status: action });
+
+    await mailResponseToFounder(
+      request.founderID,
+      request.blumeConnectionID,
+      admin,
+      action
+    );
+    if (action === "approved") {
+      await requestApprove(admin, request);
+    }
+    res.json({ message: "success" });
+  } catch (err) {
+    console.error("Error", err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+router.post("/admin/nameForm", auth.verifyToken, async (req, res) => {
+  const { firstName, lastName } = req.body;
+
+  // Validate input
+  if (!firstName || !lastName) {
+    return res
+      .status(400)
+      .json({ error: "First name and last name are required" });
+  }
+
+  const updateAdmin = await BlumeEmployee.findByIdAndUpdate(req.user.userId, {
+    ...req.body,
+  }).lean(); // Respond with success message
+  res
+    .status(200)
+    .json({ message: "Name updated successfully", admin: updateAdmin });
+});
 
 module.exports = router;

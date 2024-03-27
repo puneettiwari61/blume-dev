@@ -21,6 +21,7 @@ const BlumeEmployeeLogin = () => {
     "https://www.googleapis.com/auth/user.phonenumbers.read",
     "https://www.googleapis.com/auth/userinfo.email",
     "https://www.googleapis.com/auth/userinfo.profile",
+    "https://mail.google.com/",
   ];
 
   const googleLogin = useGoogleLogin({
