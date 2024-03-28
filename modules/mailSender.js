@@ -101,7 +101,7 @@ async function mailSenderToConnect(
         senderCompany: founder?.company,
         context,
         companyBlurb,
-        adminDashboardLink: `https://blume.onrender.com/ConnectionRequestsPage?connectionId=${requestId}&token=${token}`,
+        adminDashboardLink: `https://blume-pr-2.onrender.com/ConnectionRequestsPage?connectionId=${requestId}&token=${token}`,
       }), // html body
       headers: {
         "In-Reply-To": messageId,
