@@ -14,6 +14,7 @@ import BlumeEmployeePage from "../components/BlumeEmployeePage";
 import FoundersLogin from "../components/FoundersLogin";
 import axios from "axios";
 import ConnectionRequestsPage from "../components/ConnectionRequestsPage";
+import FoundersRequestsPage from "../components/FoundersRequestPage";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -50,6 +51,11 @@ const App = () => {
           exact
           path="/connectionRequestsPage"
           component={ConnectionRequestsPage}
+        />
+        <Route
+          exact
+          path="/founders/connectionRequestsPage"
+          component={FoundersRequestsPage}
         />
       </div>
       <ToastContainer />

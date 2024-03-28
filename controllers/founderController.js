@@ -3,9 +3,10 @@ const {
   BlumeEmployee,
   BlumeConnection,
   AllContacts,
+  ConnectionRequest,
 } = require("../models/blumeEmployee");
 const auth = require("../modules/auth");
-const { mailSender, mailSenderToConnect } = require("../modules/mailSender");
+const { mailSenderToConnect } = require("../modules/mailSender");
 
 module.exports = {
   sendOTP: async (req, res) => {
@@ -97,10 +98,7 @@ module.exports = {
     }
   },
   connectMessage: async (req, res) => {
-    //mutliple refrences
-    // email tempelating
-    //blume pulse to Blume Navigator
-    const { context, employeeID } = req.body;
+    const { context, companyBlurb, employeeID } = req.body;
     try {
       const connection = await BlumeConnection.findById(employeeID);
       const founder = await BlumePortfolioCompany.findById(req.user.userId);
@@ -108,16 +106,30 @@ module.exports = {
         const blumeReference = await BlumeEmployee.findById(
           connection?.whoseConnection
         );
-        const sendMail = await mailSenderToConnect(
+        // Create a new connection request document
+        const newConnectionRequest = new ConnectionRequest({
+          blumeConnectionID: connection._id,
+          founderID: founder._id,
+          assignedBlumeReferenceID: blumeReference._id,
+          context,
+          companyBlurb,
+          status: "pending",
+        });
+
+        // Save the connection request to the database
+        await newConnectionRequest.save();
+        await mailSenderToConnect(
           blumeReference,
           founder,
           connection,
-          context
+          context,
+          companyBlurb,
+          newConnectionRequest._id
         );
         return res.json({ success: true, message: "Successfuly sent" });
       }
     } catch (error) {
-      console.error("Error verifying OTP", error);
+      console.error("Error submitting connect request", error);
       return res
         .status(500)
         .json({ success: false, message: "Internal server error" });
@@ -136,11 +148,43 @@ module.exports = {
 
       const projection = { email: 0 };
 
-      const employees = await BlumeConnection.find(query, projection);
+      const employees = await BlumeConnection.find(query, projection).lean();
 
-      res.json({ results: employees });
+      const founderID = req.user.userId;
+
+      const requests = await ConnectionRequest.find({
+        founderID,
+        blumeConnectionID: { $in: employees.map((emp) => emp._id) },
+      }).lean();
+
+      const requestedConnections = new Set(
+        requests.map((req) => req.blumeConnectionID.toString())
+      );
+
+      const updatedEmployees = employees.map((emp) => {
+        if (requestedConnections.has(emp._id.toString())) {
+          return { ...emp, alreadyMade: true };
+        }
+        return emp;
+      });
+
+      res.json({ results: updatedEmployees });
     } catch (err) {
       console.error("Error searching Blume employees:", err);
+      res.status(500).json({ error: "Server error" });
+    }
+  },
+  requestsMade: async (req, res) => {
+    try {
+      const requests = await ConnectionRequest.find({
+        founderID: req.user.userId,
+      }).populate({
+        path: "blumeConnectionID",
+        select: "company displayName position", // Add the fields you want to select
+      });
+      res.json({ requests });
+    } catch (err) {
+      console.error("Error getting requests", err);
       res.status(500).json({ error: "Server error" });
     }
   },

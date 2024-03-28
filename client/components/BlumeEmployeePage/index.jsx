@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom/cjs/react-router-dom";
 import { toast } from "react-toastify";
+import NameForm from "../NameForm";
 // import { useLocation } from "react-router-dom/cjs/react-router-dom";
 
 const BlumeEmployeePage = () => {
@@ -62,6 +63,10 @@ const BlumeEmployeePage = () => {
       console.error("Error uploading CSV file:", error);
     }
   };
+
+  if (!user?.firstName) {
+    return <NameForm />;
+  }
 
   return (
     <div className="container mx-auto mt-8 px-4">

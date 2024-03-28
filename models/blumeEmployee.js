@@ -71,6 +71,39 @@ const AllContactsSchema = new mongoose.Schema(
   { timestamps: true, strict: false }
 );
 
+const ConnectionRequestSchema = new mongoose.Schema(
+  {
+    blumeConnectionID: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "BlumeConnection", // Reference to the BlumeConnection model
+      required: true,
+    },
+    founderID: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "BlumePortfolioCompany", // Reference to the BlumePortfolioCompany model
+      required: true,
+    },
+    assignedBlumeReferenceID: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "BlumeEmployee", // Reference to the BlumeEmployee model
+      required: true,
+    },
+    context: {
+      type: String,
+      required: true,
+    },
+    companyBlurb: {
+      type: String,
+      required: true,
+    },
+    status: {
+      type: String,
+      enum: ["pending", "approved", "declined", "inReview"],
+    },
+  },
+  { timestamps: true, strict: false }
+);
+
 // Define models
 const BlumeEmployee = mongoose.model("BlumeEmployee", BlumeEmployeeSchema);
 const BlumeConnection = mongoose.model(
@@ -82,9 +115,15 @@ const BlumePortfolioCompany = mongoose.model(
   BlumePortfolioCompanySchema
 );
 const AllContacts = mongoose.model("AllContacts", AllContactsSchema);
+const ConnectionRequest = mongoose.model(
+  "ConnectionRequest",
+  ConnectionRequestSchema
+);
+
 module.exports = {
   BlumeEmployee,
   BlumeConnection,
   BlumePortfolioCompany,
   AllContacts,
+  ConnectionRequest,
 };

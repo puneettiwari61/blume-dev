@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Introduction Request Approval</title>
+    <style>
+      /* Add your CSS styles here */
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        max-width: 600px;
+        padding: 20px;
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        margin: auto;
+      }
+      h2 {
+        color: #333333;
+        margin-top: 0;
+      }
+      p {
+        color: #666666;
+        margin-bottom: 15px;
+      }
+      .footer {
+        margin-top: 20px;
+        /* text-align: center; */
+        color: #888888;
+      }
+      .italic {
+        font-style: italic;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Hello <%= requestedName %>,</h2>
+      <p>
+        We are helping some of the upcoming stars in the Blume portfolio reach
+        their best prospects where we perceive the pain to be real and
+        meaningful to solve. In this regard, we're connecting you to <%=
+        requestorCompanyName %>'s founder, <%= requestorName %>. Please find
+        below a small blurb about <%= requestorCompanyName %>:
+      </p>
+      <p class="italic"><%= companyBlurb %></p>
+      <p class="footer">Regards,<br />Blume Admin</p>
+    </div>
+  </body>
+</html>
